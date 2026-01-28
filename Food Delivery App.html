@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- saved from url=(0023)http://localhost:3000/# -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery App</title>
+    <link rel="stylesheet" href="./Food Delivery App_files/style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><i>🍕 Welcome! FoodHub</i></div>
+            <ul class="nav-menu">
+                <li><a href="http://localhost:3000/#home" class="nav-link">Home</a></li>
+                <li><a href="http://localhost:3000/#restaurants" class="nav-link">Restaurants</a></li>
+                <li><a href="http://localhost:3000/#" class="nav-link" onclick="openCart()">🛒 Cart <span id="cart-count">0</span></a></li>
+                <li><a href="http://localhost:3000/#" class="nav-link" id="auth-btn" onclick="toggleAuthModal()" style="color: white;">👤 Nakka Venkata Sai Balaji  (Logout)</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search restaurants or food..." fdprocessedid="1abuck">
+        <button onclick="searchFood()" class="search-btn" fdprocessedid="blncka">Search</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <h1>Order your favorite food online</h1>
+            <p><b>Fast delivery · Delicious food · Great prices ·Exclusive Offers</b> </p>
+        </section>
+
+        <!-- Restaurants Section -->
+        <section id="restaurants" class="restaurants-section" style="display: none;">
+            <h2>Popular Restaurants</h2>
+            <div id="restaurants-container" class="restaurants-grid">
+        <div class="restaurant-card" onclick="selectRestaurant(1, &#39;Pizza Palace&#39;)">
+            <img src="https://via.placeholder.com/200?text=Pizza+Palace" alt="Pizza Palace" class="card-image">
+            <div class="card-body">
+                <div class="card-title">Pizza Palace</div>
+                <div class="card-description">Delicious Italian pizzas and pasta</div>
+                <div class="card-rating">
+                    <span>⭐ 4.5</span>
+                    <span>30-40 mins</span>
+                </div>
+                <div class="card-time">Delivery: $2.99</div>
+            </div>
+        </div>
+    
+        <div class="restaurant-card" onclick="selectRestaurant(2, &#39;Burger Barn&#39;)">
+            <img src="https://via.placeholder.com/200?text=Burger+Barn" alt="Burger Barn" class="card-image">
+            <div class="card-body">
+                <div class="card-title">Burger Barn</div>
+                <div class="card-description">Fresh burgers and fries</div>
+                <div class="card-rating">
+                    <span>⭐ 4.3</span>
+                    <span>20-30 mins</span>
+                </div>
+                <div class="card-time">Delivery: $1.99</div>
+            </div>
+        </div>
+    
+        <div class="restaurant-card" onclick="selectRestaurant(3, &#39;Sushi Heaven&#39;)">
+            <img src="https://via.placeholder.com/200?text=Sushi+Heaven" alt="Sushi Heaven" class="card-image">
+            <div class="card-body">
+                <div class="card-title">Sushi Heaven</div>
+                <div class="card-description">Fresh sushi and asian cuisine</div>
+                <div class="card-rating">
+                    <span>⭐ 4.7</span>
+                    <span>35-45 mins</span>
+                </div>
+                <div class="card-time">Delivery: $3.99</div>
+            </div>
+        </div>
+    
+        <div class="restaurant-card" onclick="selectRestaurant(4, &#39;Taco Fiesta&#39;)">
+            <img src="https://via.placeholder.com/200?text=Taco+Fiesta" alt="Taco Fiesta" class="card-image">
+            <div class="card-body">
+                <div class="card-title">Taco Fiesta</div>
+                <div class="card-description">Authentic Mexican food</div>
+                <div class="card-rating">
+                    <span>⭐ 4.4</span>
+                    <span>25-35 mins</span>
+                </div>
+                <div class="card-time">Delivery: $2.49</div>
+            </div>
+        </div>
+    </div>
+        </section>
+
+        <!-- Food Items Section -->
+        <section id="food-section" class="food-section" style="display: block;">
+            <button onclick="goBack()" class="back-btn" fdprocessedid="w3bjz">← Back to Restaurants</button>
+            <h2 id="restaurant-name">Search Results for "Pizza"</h2>
+            <div id="food-container" class="food-grid">
+        <div class="food-card" onclick="viewFoodDetail(1, &#39;Margherita Pizza&#39;, &#39;Classic pizza with tomato, mozzarella and basil&#39;, 12.99, &#39;https://via.placeholder.com/200?text=Margherita&#39;)">
+            <img src="https://via.placeholder.com/200?text=Margherita" alt="Margherita Pizza" class="card-image">
+            <div class="card-body">
+                <div class="card-title">Margherita Pizza</div>
+                <div class="card-description">Classic pizza with tomato, mozzarella and basil</div>
+                <div class="card-price">$12.99</div>
+                <div class="card-actions">
+                    <button onclick="event.stopPropagation(); quickAddToCart(1, &#39;Margherita Pizza&#39;, 12.99)" class="add-btn" fdprocessedid="xs6c7p">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    
+        <div class="food-card" onclick="viewFoodDetail(2, &#39;Pepperoni Pizza&#39;, &#39;Pizza with pepperoni and cheese&#39;, 14.99, &#39;https://via.placeholder.com/200?text=Pepperoni&#39;)">
+            <img src="https://via.placeholder.com/200?text=Pepperoni" alt="Pepperoni Pizza" class="card-image">
+            <div class="card-body">
+                <div class="card-title">Pepperoni Pizza</div>
+                <div class="card-description">Pizza with pepperoni and cheese</div>
+                <div class="card-price">$14.99</div>
+                <div class="card-actions">
+                    <button onclick="event.stopPropagation(); quickAddToCart(2, &#39;Pepperoni Pizza&#39;, 14.99)" class="add-btn" fdprocessedid="2jror">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        </section>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">×</span>
+            <h2>Shopping Cart</h2>
+            <div id="cart-items-container"><p class="empty-message">Your cart is empty</p></div>
+            <div class="cart-summary">
+                <h3>Total: $<span id="cart-total">0.00</span></h3>
+                <button onclick="checkout()" class="checkout-btn" fdprocessedid="ah55j">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content auth-modal">
+            <span class="close" onclick="closeAuthModal()">×</span>
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab(&#39;login&#39;)">Login</button>
+                <button class="tab-btn" onclick="switchTab(&#39;register&#39;)">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <h3>Login</h3>
+                <input type="email" id="login-email" placeholder="Email" required="">
+                <input type="password" id="login-password" placeholder="Password" required="">
+                <button type="submit" class="btn">Login</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form">
+                <h3>Register</h3>
+                <input type="text" id="register-name" placeholder="Full Name" required="">
+                <input type="email" id="register-email" placeholder="Email" required="">
+                <input type="tel" id="register-phone" placeholder="Phone" required="">
+                <input type="password" id="register-password" placeholder="Password" required="">
+                <input type="text" id="register-address" placeholder="Address" required="">
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCheckout()">×</span>
+            <h2>Checkout</h2>
+            <form id="checkout-form">
+                <h3>Delivery Details</h3>
+                <input type="text" id="delivery-address" placeholder="Delivery Address" required="">
+                <input type="tel" id="delivery-phone" placeholder="Phone Number" required="">
+                
+                <h3>Order Summary</h3>
+                <div id="checkout-items">
+                    <!-- Items will be shown here -->
+                </div>
+                
+                <div class="checkout-total">
+                    <h3>Total: $<span id="checkout-total">0.00</span></h3>
+                </div>
+
+                <button type="submit" class="checkout-btn">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="orders-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrders()">×</span>
+            <h2>My Orders</h2>
+            <div id="orders-container">
+                <!-- Orders will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Food Detail Modal -->
+    <div id="food-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFoodDetail()">×</span>
+            <div id="food-detail">
+                <!-- Food details will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="./Food Delivery App_files/script.js.download"></script>
+
+
+<span id="PING_IFRAME_FORM_DETECTION" style="display: none;"></span></body></html>

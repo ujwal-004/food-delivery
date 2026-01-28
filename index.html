@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Delivery App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo"><i>🍕 Welcome! FoodHub</i></div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#restaurants" class="nav-link">Restaurants</a></li>
+                <li><a href="#" class="nav-link" onclick="openCart()">🛒 Cart <span id="cart-count">0</span></a></li>
+                <li><a href="#" class="nav-link" id="auth-btn" onclick="toggleAuthModal()">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="Search restaurants or food...">
+        <button onclick="searchFood()" class="search-btn">Search</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <h1>Order your favorite food online</h1>
+            <p><b>Fast delivery · Delicious food · Great prices ·Exclusive Offers</b> </p>
+        </section>
+
+        <!-- Restaurants Section -->
+        <section id="restaurants" class="restaurants-section">
+            <h2>Popular Restaurants</h2>
+            <div id="restaurants-container" class="restaurants-grid">
+                <!-- Restaurants will be loaded here via JavaScript -->
+            </div>
+        </section>
+
+        <!-- Food Items Section -->
+        <section id="food-section" class="food-section" style="display:none;">
+            <button onclick="goBack()" class="back-btn">← Back to Restaurants</button>
+            <h2 id="restaurant-name"></h2>
+            <div id="food-container" class="food-grid">
+                <!-- Food items will be loaded here via JavaScript -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCart()">&times;</span>
+            <h2>Shopping Cart</h2>
+            <div id="cart-items-container">
+                <!-- Cart items will be displayed here -->
+            </div>
+            <div class="cart-summary">
+                <h3>Total: $<span id="cart-total">0.00</span></h3>
+                <button onclick="checkout()" class="checkout-btn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content auth-modal">
+            <span class="close" onclick="closeAuthModal()">&times;</span>
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <h3>Login</h3>
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="btn">Login</button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form">
+                <h3>Register</h3>
+                <input type="text" id="register-name" placeholder="Full Name" required>
+                <input type="email" id="register-email" placeholder="Email" required>
+                <input type="tel" id="register-phone" placeholder="Phone" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <input type="text" id="register-address" placeholder="Address" required>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCheckout()">&times;</span>
+            <h2>Checkout</h2>
+            <form id="checkout-form">
+                <h3>Delivery Details</h3>
+                <input type="text" id="delivery-address" placeholder="Delivery Address" required>
+                <input type="tel" id="delivery-phone" placeholder="Phone Number" required>
+                
+                <h3>Order Summary</h3>
+                <div id="checkout-items">
+                    <!-- Items will be shown here -->
+                </div>
+                
+                <div class="checkout-total">
+                    <h3>Total: $<span id="checkout-total">0.00</span></h3>
+                </div>
+
+                <button type="submit" class="checkout-btn">Place Order</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div id="orders-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeOrders()">&times;</span>
+            <h2>My Orders</h2>
+            <div id="orders-container">
+                <!-- Orders will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Food Detail Modal -->
+    <div id="food-detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFoodDetail()">&times;</span>
+            <div id="food-detail">
+                <!-- Food details will be shown here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
