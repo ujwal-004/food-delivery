@@ -7,6 +7,7 @@ let cart = [];
 let currentRestaurant = null;
 let currentRestaurantId = null;
 let currentDetailRestaurantId = null;
+let currentDetailDeliveryFee = 0;
 let foodDetailQuantity = 1;
 
 // Initialize
@@ -97,23 +98,24 @@ function displayFoodItems(items) {
     }
 
     container.innerHTML = items.map(item => `
-        <div class="food-card" onclick="viewFoodDetail(${item.id}, '${item.name}', '${item.description}', ${item.price}, '${item.image}', ${item.restaurant_id})">
+        <div class="food-card" onclick="viewFoodDetail(${item.id}, '${item.name}', '${item.description}', ${item.price}, '${item.image}', ${item.restaurant_id}, ${item.delivery_fee})">
             <img src="${item.image}" alt="${item.name}" class="card-image">
             <div class="card-body">
                 <div class="card-title">${item.name}</div>
                 <div class="card-description">${item.description || ''}</div>
                 <div class="card-price">$${item.price}</div>
                 <div class="card-actions">
-                    <button onclick="event.stopPropagation(); quickAddToCart(${item.id}, '${item.name}', ${item.price}, ${item.restaurant_id})" class="add-btn">Add to Cart</button>
+                    <button onclick="event.stopPropagation(); quickAddToCart(${item.id}, '${item.name}', ${item.price}, ${item.restaurant_id}, ${item.delivery_fee})" class="add-btn">Add to Cart</button>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-function viewFoodDetail(foodId, name, description, price, image, restaurantId) {
+function viewFoodDetail(foodId, name, description, price, image, restaurantId, deliveryFee) {
     foodDetailQuantity = 1;
     currentDetailRestaurantId = restaurantId;
+    currentDetailDeliveryFee = Number(deliveryFee || 0);
     const modal = document.getElementById('food-detail-modal');
     document.getElementById('food-detail').innerHTML = `
         <img src="${image}" alt="${name}" class="food-detail-image">
@@ -154,16 +156,16 @@ function closeFoodDetail() {
 }
 
 // ===== CART FUNCTIONS =====
-function quickAddToCart(foodId, name, price, restaurantId) {
-    addItemToCart(foodId, name, price, 1, restaurantId);
+function quickAddToCart(foodId, name, price, restaurantId, deliveryFee) {
+    addItemToCart(foodId, name, price, 1, restaurantId, deliveryFee);
 }
 
 function addDetailToCart(foodId, name, price, restaurantId) {
-    addItemToCart(foodId, name, price, foodDetailQuantity, restaurantId || currentDetailRestaurantId);
+    addItemToCart(foodId, name, price, foodDetailQuantity, restaurantId || currentDetailRestaurantId, currentDetailDeliveryFee);
     closeFoodDetail();
 }
 
-function addItemToCart(foodId, name, price, quantity, restaurantId) {
+function addItemToCart(foodId, name, price, quantity, restaurantId, deliveryFee) {
     const selectedRestaurantId = restaurantId || currentRestaurantId;
     if (cart.length && Number(cart[0].restaurant_id) !== Number(selectedRestaurantId)) {
         alert('Please place or clear your current restaurant order before adding food from another restaurant.');
@@ -179,7 +181,8 @@ function addItemToCart(foodId, name, price, quantity, restaurantId) {
             name: name,
             price: price,
             quantity: quantity,
-            restaurant_id: selectedRestaurantId
+            restaurant_id: selectedRestaurantId,
+            delivery_fee: Number(deliveryFee || 0)
         });
     }
     
@@ -263,8 +266,9 @@ function removeFromCart(foodId) {
 }
 
 function updateCartTotal() {
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById('cart-total').textContent = total.toFixed(2);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveryFee = cart.length ? Number(cart[0].delivery_fee || 0) : 0;
+    document.getElementById('cart-total').textContent = (subtotal + deliveryFee).toFixed(2);
 }
 
 function checkout() {
@@ -285,14 +289,18 @@ function checkout() {
 
 function displayCheckoutForm() {
     const checkoutItems = document.getElementById('checkout-items');
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const deliveryFee = Number(cart[0].delivery_fee || 0);
+    const total = subtotal + deliveryFee;
 
     checkoutItems.innerHTML = cart.map(item => `
         <div class="checkout-item">
             <span>${item.name} x ${item.quantity}</span>
             <span>$${(item.price * item.quantity).toFixed(2)}</span>
         </div>
-    `).join('');
+    `).join('') + `
+        <div class="checkout-item"><span>Delivery fee</span><span>${deliveryFee.toFixed(2)}</span></div>
+    `;
 
     document.getElementById('checkout-total').textContent = total.toFixed(2);
 }
