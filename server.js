@@ -86,7 +86,7 @@ app.post('/api/auth/register', asyncHandler(async (req, res) => {
 
   if (!cleanName || cleanName.length > 100 || !isValidEmail(cleanEmail)
       || !cleanPhone || cleanPhone.length > 15
-      || typeof password !== 'string' || password.length < 8 || password.length > 72) {
+      || typeof password !== 'string' || password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) {
     return res.status(400).json({
       error: 'Enter a valid name, email, phone number and password (8–72 characters).'
     });
@@ -141,7 +141,7 @@ app.get('/api/food/restaurant/:id', asyncHandler(async (req, res) => {
     return res.status(400).json({ error: 'Invalid restaurant ID.' });
   }
   const [rows] = await db.execute(
-    'SELECT id, restaurant_id, name, description, price, image, category, available FROM food_items WHERE restaurant_id = ? AND available = 1 ORDER BY id',
+    'SELECT f.id, f.restaurant_id, f.name, f.description, f.price, f.image, f.category, f.available, r.delivery_fee FROM food_items f INNER JOIN restaurants r ON r.id = f.restaurant_id WHERE f.restaurant_id = ? AND f.available = 1 ORDER BY f.id',
     [restaurantId]
   );
   res.json(rows);
@@ -154,7 +154,7 @@ app.get('/api/food/search/:query', asyncHandler(async (req, res) => {
   }
   const term = `%${query}%`;
   const [rows] = await db.execute(
-    'SELECT id, restaurant_id, name, description, price, image, category, available FROM food_items WHERE available = 1 AND (name LIKE ? OR description LIKE ?) ORDER BY name',
+    'SELECT f.id, f.restaurant_id, f.name, f.description, f.price, f.image, f.category, f.available, r.delivery_fee FROM food_items f INNER JOIN restaurants r ON r.id = f.restaurant_id WHERE f.available = 1 AND (f.name LIKE ? OR f.description LIKE ?) ORDER BY f.name',
     [term, term]
   );
   res.json(rows);
