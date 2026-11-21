@@ -6,6 +6,7 @@ let currentUser = null;
 let cart = [];
 let currentRestaurant = null;
 let currentRestaurantId = null;
+let currentDetailRestaurantId = null;
 let foodDetailQuantity = 1;
 
 // Initialize
@@ -96,22 +97,23 @@ function displayFoodItems(items) {
     }
 
     container.innerHTML = items.map(item => `
-        <div class="food-card" onclick="viewFoodDetail(${item.id}, '${item.name}', '${item.description}', ${item.price}, '${item.image}')">
+        <div class="food-card" onclick="viewFoodDetail(${item.id}, '${item.name}', '${item.description}', ${item.price}, '${item.image}', ${item.restaurant_id})">
             <img src="${item.image}" alt="${item.name}" class="card-image">
             <div class="card-body">
                 <div class="card-title">${item.name}</div>
                 <div class="card-description">${item.description || ''}</div>
                 <div class="card-price">$${item.price}</div>
                 <div class="card-actions">
-                    <button onclick="event.stopPropagation(); quickAddToCart(${item.id}, '${item.name}', ${item.price})" class="add-btn">Add to Cart</button>
+                    <button onclick="event.stopPropagation(); quickAddToCart(${item.id}, '${item.name}', ${item.price}, ${item.restaurant_id})" class="add-btn">Add to Cart</button>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-function viewFoodDetail(foodId, name, description, price, image) {
+function viewFoodDetail(foodId, name, description, price, image, restaurantId) {
     foodDetailQuantity = 1;
+    currentDetailRestaurantId = restaurantId;
     const modal = document.getElementById('food-detail-modal');
     document.getElementById('food-detail').innerHTML = `
         <img src="${image}" alt="${name}" class="food-detail-image">
@@ -127,7 +129,7 @@ function viewFoodDetail(foodId, name, description, price, image) {
                 <button onclick="increaseQuantity()">+</button>
             </div>
             
-            <button class="btn add-to-cart-modal" onclick="addDetailToCart(${foodId}, '${name}', ${price})">
+            <button class="btn add-to-cart-modal" onclick="addDetailToCart(${foodId}, '${name}', ${price}, ${restaurantId})">
                 Add to Cart
             </button>
         </div>
@@ -152,16 +154,21 @@ function closeFoodDetail() {
 }
 
 // ===== CART FUNCTIONS =====
-function quickAddToCart(foodId, name, price) {
-    addItemToCart(foodId, name, price, 1);
+function quickAddToCart(foodId, name, price, restaurantId) {
+    addItemToCart(foodId, name, price, 1, restaurantId);
 }
 
-function addDetailToCart(foodId, name, price) {
-    addItemToCart(foodId, name, price, foodDetailQuantity);
+function addDetailToCart(foodId, name, price, restaurantId) {
+    addItemToCart(foodId, name, price, foodDetailQuantity, restaurantId || currentDetailRestaurantId);
     closeFoodDetail();
 }
 
-function addItemToCart(foodId, name, price, quantity) {
+function addItemToCart(foodId, name, price, quantity, restaurantId) {
+    const selectedRestaurantId = restaurantId || currentRestaurantId;
+    if (cart.length && Number(cart[0].restaurant_id) !== Number(selectedRestaurantId)) {
+        alert('Please place or clear your current restaurant order before adding food from another restaurant.');
+        return;
+    }
     const existingItem = cart.find(item => item.id === foodId);
     
     if (existingItem) {
@@ -172,7 +179,7 @@ function addItemToCart(foodId, name, price, quantity) {
             name: name,
             price: price,
             quantity: quantity,
-            restaurant_id: currentRestaurantId
+            restaurant_id: selectedRestaurantId
         });
     }
     
@@ -310,19 +317,16 @@ async function handleCheckout(event) {
         return;
     }
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
     try {
         const response = await fetch(`${API_URL}/orders`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({
-                user_id: currentUser.id,
-                restaurant_id: currentRestaurantId,
-                items: cart,
-                total_amount: total,
+                restaurant_id: cart[0].restaurant_id,
+                items: cart.map(({ id, quantity }) => ({ id, quantity })),
                 delivery_address: deliveryAddress,
                 phone: deliveryPhone
             })
@@ -358,7 +362,7 @@ async function searchFood() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/food/search/${query}`);
+        const response = await fetch(`${API_URL}/food/search/${encodeURIComponent(query)}`);
         
         if (!response.ok) {
             const error = await response.json();
@@ -523,7 +527,9 @@ async function loadUserOrders() {
     if (!currentUser) return;
     
     try {
-        const response = await fetch(`${API_URL}/orders/user/${currentUser.id}`);
+        const response = await fetch(`${API_URL}/orders/user/${currentUser.id}`, {
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
         const orders = await response.json();
         displayOrders(orders);
     } catch (error) {
